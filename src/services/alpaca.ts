@@ -2,36 +2,37 @@
 
 import Alpaca from '@alpacahq/alpaca-trade-api';
 import type { Activity } from '@/lib/types';
+import { mockAccount, mockActivities, mockPortfolioHistory, mockPositions } from '@/lib/mock-data';
 
 const {
-  ALPACA_API_KEY_ID,
-  ALPACA_API_SECRET_KEY,
+  API_KEY,
+  API_SECRET,
   ALPACA_IS_PAPER = 'true', // default to paper trading
 } = process.env;
 
-if (!ALPACA_API_KEY_ID || !ALPACA_API_SECRET_KEY) {
-  throw new Error('Alpaca API credentials are missing in environment variables');
-}
+const useMockData = !API_KEY || !API_SECRET;
 
-const alpaca = new Alpaca({
-  keyId: ALPACA_API_KEY_ID,
-  secretKey: ALPACA_API_SECRET_KEY,
+const alpaca = useMockData ? null : new Alpaca({
+  keyId: API_KEY,
+  secretKey: API_SECRET,
   paper: ALPACA_IS_PAPER.toLowerCase() === 'true',
 });
 
 export async function getAccount() {
+  if (useMockData) return mockAccount;
   try {
-    const account = await alpaca.getAccount();
+    const account = await alpaca!.getAccount();
     return account;
   } catch (error: any) {
     console.error('[Alpaca] Error fetching account:', error?.message);
-    throw new Error('Failed to fetch Alpaca account');
+    throw new Error(`Failed to fetch Alpaca account: ${error.message}`);
   }
 }
 
 export async function getPortfolioHistory() {
+    if (useMockData) return mockPortfolioHistory;
   try {
-    const history = await alpaca.getPortfolioHistory({
+    const history = await alpaca!.getPortfolioHistory({
       date_start: undefined,      // optional
       date_end: undefined,        // optional
       period: '1M',               // required
@@ -41,13 +42,14 @@ export async function getPortfolioHistory() {
     return history;
   } catch (error: any) {
     console.error('[Alpaca] Error fetching portfolio history:', error?.message);
-    throw new Error('Failed to fetch portfolio history from Alpaca.');
+    throw new Error(`Failed to fetch portfolio history from Alpaca: ${error.message}`);
   }
 }
 
 export async function getActivities(): Promise<Activity[]> {
+    if (useMockData) return mockActivities;
   try {
-    const activities = await alpaca.getAccountActivities({
+    const activities = await alpaca!.getAccountActivities({
         activityTypes: 'FILL',
         pageSize: 100,
         direction: 'desc',
@@ -98,17 +100,18 @@ export async function getActivities(): Promise<Activity[]> {
 
   } catch (error: any) {
     console.error('[Alpaca] Error fetching activities:', error?.message);
-    throw new Error('Failed to fetch trade activities from Alpaca.');
+    throw new Error(`Failed to fetch trade activities from Alpaca: ${error.message}`);
   }
 }
 
 
 export async function getPositions() {
+    if (useMockData) return mockPositions;
   try {
-    const positions = await alpaca.getPositions();
+    const positions = await alpaca!.getPositions();
     return positions;
   } catch (error: any) {
     console.error('[Alpaca] Error fetching positions:', error?.message);
-    throw new Error('Failed to fetch positions from Alpaca.');
+    throw new Error(`Failed to fetch positions from Alpaca: ${error.message}`);
   }
 }

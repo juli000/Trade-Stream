@@ -11,7 +11,7 @@ export const mockAccount: Account = {
   cash: '95000.00',
   portfolio_value: '105320.50',
   equity: '105320.50',
-  last_equity: '100000.00',
+  last_equity: '104820.50',
   long_market_value: '10320.50',
   short_market_value: '0.00',
   initial_margin: '5160.25',
@@ -56,12 +56,16 @@ const generatePortfolioHistory = (): PortfolioHistory => {
 export const mockPortfolioHistory = generatePortfolioHistory();
 
 export const mockActivities: Activity[] = [
-  { id: 't-1', activity_type: 'FILL', transaction_time: '2024-07-22T14:35:00Z', type: 'fill', price: '180.50', qty: '10', side: 'buy', symbol: 'AAPL', pl: -50.20, leaves_qty: '0', order_id: 'o-1', cum_qty: '10', net_amount: null, per_share_amount: null, description: 'Partial fill of buy 10 shares of AAPL' },
-  { id: 't-2', activity_type: 'FILL', transaction_time: '2024-07-22T18:05:00Z', type: 'fill', price: '175.48', qty: '10', side: 'sell', symbol: 'AAPL', pl: 120.80, leaves_qty: '0', order_id: 'o-2', cum_qty: '10', net_amount: null, per_share_amount: null, description: 'Partial fill of sell 10 shares of AAPL' },
-  { id: 't-3', activity_type: 'FILL', transaction_time: '2024-07-21T13:30:00Z', type: 'fill', price: '580.10', qty: '5', side: 'buy', symbol: 'TSLA', pl: 35.15, leaves_qty: '0', order_id: 'o-3', cum_qty: '5', net_amount: null, per_share_amount: null, description: 'Fill of buy 5 shares of TSLA' },
-  { id: 't-4', activity_type: 'FILL', transaction_time: '2024-07-21T16:45:00Z', type: 'fill', price: '595.12', qty: '5', side: 'sell', symbol: 'TSLA', pl: 75.10, leaves_qty: '0', order_id: 'o-4', cum_qty: '5', net_amount: null, per_share_amount: null, description: 'Fill of sell 5 shares of TSLA' },
-  { id: 't-5', activity_type: 'FILL', transaction_time: '2024-07-20T10:00:00Z', type: 'fill', price: '340.00', qty: '15', side: 'buy', symbol: 'NVDA', pl: -80.45, leaves_qty: '0', order_id: 'o-5', cum_qty: '15', net_amount: null, per_share_amount: null, description: 'Fill of buy 15 shares of NVDA' },
-  { id: 't-6', activity_type: 'FILL', transaction_time: '2024-07-20T12:15:00Z', type: 'fill', price: '335.65', qty: '15', side: 'sell', symbol: 'NVDA', pl: 210.55, leaves_qty: '0', order_id: 'o-6', cum_qty: '15', net_amount: null, per_share_amount: null, description: 'Fill of sell 15 shares of NVDA' },
+  { id: 't-1', activity_type: 'FILL', transaction_time: new Date().toISOString(), type: 'fill', price: '180.50', qty: '10', side: 'buy', symbol: 'AAPL', pl: undefined, leaves_qty: '0', order_id: 'o-1', cum_qty: '10', net_amount: null, per_share_amount: null, description: 'Partial fill of buy 10 shares of AAPL' },
+  { id: 't-2', activity_type: 'FILL', transaction_time: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '175.48', qty: '10', side: 'sell', symbol: 'AAPL', pl: 120.80, leaves_qty: '0', order_id: 'o-2', cum_qty: '10', net_amount: null, per_share_amount: null, description: 'Partial fill of sell 10 shares of AAPL' },
+  { id: 't-3', activity_type: 'FILL', transaction_time: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '580.10', qty: '5', side: 'buy', symbol: 'TSLA', pl: undefined, leaves_qty: '0', order_id: 'o-3', cum_qty: '5', net_amount: null, per_share_amount: null, description: 'Fill of buy 5 shares of TSLA' },
+  { id: 't-4', activity_type: 'FILL', transaction_time: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '595.12', qty: '5', side: 'sell', symbol: 'TSLA', pl: 75.10, leaves_qty: '0', order_id: 'o-4', cum_qty: '5', net_amount: null, per_share_amount: null, description: 'Fill of sell 5 shares of TSLA' },
+  { id: 't-5', activity_type: 'FILL', transaction_time: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '340.00', qty: '15', side: 'buy', symbol: 'NVDA', pl: undefined, leaves_qty: '0', order_id: 'o-5', cum_qty: '15', net_amount: null, per_share_amount: null, description: 'Fill of buy 15 shares of NVDA' },
+  { id: 't-6', activity_type: 'FILL', transaction_time: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '335.65', qty: '15', side: 'sell', symbol: 'NVDA', pl: -65.25, leaves_qty: '0', order_id: 'o-6', cum_qty: '15', net_amount: null, per_share_amount: null, description: 'Fill of sell 15 shares of NVDA' },
+  { id: 't-7', activity_type: 'FILL', transaction_time: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '450.00', qty: '25', side: 'buy', symbol: 'MSFT', pl: undefined, leaves_qty: '0', order_id: 'o-7', cum_qty: '25' },
+  { id: 't-8', activity_type: 'FILL', transaction_time: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '465.30', qty: '25', side: 'sell', symbol: 'MSFT', pl: 382.5, leaves_qty: '0', order_id: 'o-8', cum_qty: '25' },
+  { id: 't-9', activity_type: 'FILL', transaction_time: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '150.00', qty: '30', side: 'buy', symbol: 'AMD', pl: undefined, leaves_qty: '0', order_id: 'o-9', cum_qty: '30' },
+  { id: 't-10', activity_type: 'FILL', transaction_time: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), type: 'fill', price: '145.80', qty: '30', side: 'sell', symbol: 'AMD', pl: -126, leaves_qty: '0', order_id: 'o-10', cum_qty: '30' },
 ];
 
 export const mockPositions: Position[] = [

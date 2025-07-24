@@ -52,6 +52,17 @@ export default async function DashboardPage() {
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Welcome to your Alpaca Portfolio Tracker.</p>
         </div>
+        {!process.env.API_KEY && (
+             <Alert variant="default" className="bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-950 dark:border-yellow-800 dark:text-yellow-200 [&>svg]:text-yellow-600">
+                <Terminal className="h-4 w-4" />
+                <AlertTitle>Mock Data Mode</AlertTitle>
+                <AlertDescription>
+                   You are currently viewing mock data because your Alpaca API credentials are not set. To connect to your real account, please create a
+                    <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mx-1">.env.local</code> 
+                    file in the root of your project and add your <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mx-1">API_KEY</code> and <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mx-1">API_SECRET</code>.
+                </AlertDescription>
+            </Alert>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <KpiCard
@@ -183,7 +194,7 @@ export default async function DashboardPage() {
           <Terminal className="h-4 w-4" />
           <AlertTitle>Connection Error</AlertTitle>
           <AlertDescription>
-            Failed to connect to the Alpaca API. Please ensure your API keys are set correctly in a 
+            Failed to connect to the Alpaca API. Please ensure your API_KEY and API_SECRET are set correctly in a 
             <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">.env.local</code> file.
             <p className="mt-2"><strong>Error:</strong> {error.message}</p>
           </AlertDescription>
