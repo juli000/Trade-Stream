@@ -76,7 +76,7 @@ export default async function DashboardPage() {
               <CardDescription>Your portfolio value over the last 30 days.</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
-              <EquityChart data={portfolioHistory} />
+              <EquityChart data={portfolioHistory} currentEquity={parseFloat(account.equity)} />
             </CardContent>
           </Card>
 

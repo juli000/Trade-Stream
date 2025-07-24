@@ -6,6 +6,7 @@ import type { PortfolioHistory } from '@/lib/types';
 
 interface EquityChartProps {
   data: PortfolioHistory;
+  currentEquity: number;
 }
 
 const chartConfig = {
@@ -15,22 +16,36 @@ const chartConfig = {
   },
 };
 
-export default function EquityChart({ data }: EquityChartProps) {
+export default function EquityChart({ data, currentEquity }: EquityChartProps) {
     const startDate = new Date('2024-07-23T00:00:00Z').getTime() / 1000;
 
     const filteredTimestamps = data.timestamp.filter(ts => ts >= startDate);
     const startIndex = data.timestamp.findIndex(ts => ts >= startDate);
     
+    const historicalData = filteredTimestamps.map((ts, index) => ({
+        date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        equity: data.equity[startIndex + index],
+    }));
+
     const chartData = [
         {
             date: 'Jul 23',
             equity: 100000,
         },
-        ...filteredTimestamps.map((ts, index) => ({
-            date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            equity: data.equity[startIndex + index],
-        })),
+        ...historicalData
     ];
+
+    const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const todayDataPoint = chartData.find(d => d.date === todayStr);
+
+    if (todayDataPoint) {
+        todayDataPoint.equity = currentEquity;
+    } else {
+        chartData.push({
+            date: todayStr,
+            equity: currentEquity,
+        });
+    }
     
     const uniqueChartData = Array.from(new Map(chartData.map(item => [item.date, item])).values());
 
