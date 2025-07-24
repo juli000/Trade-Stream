@@ -28,7 +28,7 @@ export default function RecentTradesTable({ data }: RecentTradesTableProps) {
   const trades = data.filter(activity => activity.activity_type === 'FILL');
 
   const formatDate = (dateString: string) => {
-    if (!isClient) {
+    if (!isClient || !dateString) {
       return null; // Don't render date on server to avoid mismatch
     }
     return format(new Date(dateString), "PPp");
