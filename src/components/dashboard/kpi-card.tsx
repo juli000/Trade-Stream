@@ -6,7 +6,7 @@ interface KpiCardProps {
   value: number;
   description?: string;
   icon: ReactNode;
-  format?: 'currency' | 'percent' | 'number';
+  format?: 'currency' | 'percent' | 'number' | 'integer';
 }
 
 const formatValue = (value: number, format: KpiCardProps['format']) => {
@@ -17,6 +17,8 @@ const formatValue = (value: number, format: KpiCardProps['format']) => {
             return `${value.toFixed(2)}%`;
         case 'number':
             return value.toFixed(2);
+        case 'integer':
+            return value.toString();
         default:
             return value.toString();
     }

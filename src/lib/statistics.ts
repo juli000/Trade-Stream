@@ -1,11 +1,9 @@
 import type { Activity, PortfolioHistory } from './types';
 
-export const calculateTotalReturn = (history: PortfolioHistory) => {
-  if (!history.equity || history.equity.length === 0) {
+export const calculateTotalReturn = (currentEquity: number, initialEquity: number) => {
+  if (initialEquity === 0) {
     return { value: 0, percentage: 0 };
   }
-  const initialEquity = history.base_value;
-  const currentEquity = history.equity[history.equity.length - 1] ?? initialEquity;
   const absoluteReturn = currentEquity - initialEquity;
   const percentageReturn = (absoluteReturn / initialEquity) * 100;
 
@@ -13,15 +11,18 @@ export const calculateTotalReturn = (history: PortfolioHistory) => {
 };
 
 export const calculateWinRateAndAvgWinLoss = (activities: Activity[]) => {
-  const trades = activities.filter(a => a.activity_type === 'FILL' && a.pl);
+  const trades = activities.filter(a => a.activity_type === 'FILL' && a.pl != null);
   if (trades.length === 0) {
-    return { winRate: 0, avgWin: 0, avgLoss: 0, profitFactor: 0 };
+    return { winRate: 0, avgWin: 0, avgLoss: 0, profitFactor: 0, winningTradesCount: 0, losingTradesCount: 0 };
   }
 
   const winningTrades = trades.filter(t => t.pl! > 0);
   const losingTrades = trades.filter(t => t.pl! < 0);
 
-  const winRate = (winningTrades.length / trades.length) * 100;
+  const winningTradesCount = winningTrades.length;
+  const losingTradesCount = losingTrades.length;
+
+  const winRate = (winningTrades.length / (winningTradesCount + losingTradesCount)) * 100 || 0;
 
   const totalWinAmount = winningTrades.reduce((sum, t) => sum + t.pl!, 0);
   const totalLossAmount = Math.abs(losingTrades.reduce((sum, t) => sum + t.pl!, 0));
@@ -31,7 +32,7 @@ export const calculateWinRateAndAvgWinLoss = (activities: Activity[]) => {
   
   const profitFactor = totalLossAmount > 0 ? totalWinAmount / totalLossAmount : Infinity;
 
-  return { winRate, avgWin, avgLoss, profitFactor };
+  return { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount };
 };
 
 export const calculateMaxDrawdown = (history: PortfolioHistory) => {

@@ -12,10 +12,9 @@ import { getAccount, getActivities, getPortfolioHistory } from "@/services/alpac
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
-  calculateMaxDrawdown,
   calculateSharpeRatio 
 } from "@/lib/statistics";
-import { DollarSign, Percent, TrendingUp, TrendingDown, CheckCircle, Target } from "lucide-react";
+import { DollarSign, Percent, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 
@@ -28,12 +27,9 @@ export default async function DashboardPage() {
       getActivities(),
     ]);
 
-    const totalReturn = calculateTotalReturn(portfolioHistory);
-    // Note: Alpaca activities don't include P/L for each trade directly. 
-    // This would require more complex logic to calculate based on position closing.
-    // The mock data had this, so we'll simulate it for now.
-    const { winRate, avgWin, avgLoss, profitFactor } = calculateWinRateAndAvgWinLoss(activities as any[]);
-    const maxDrawdown = calculateMaxDrawdown(portfolioHistory);
+    const initialBalance = 100000;
+    const totalReturn = calculateTotalReturn(parseFloat(account.equity), initialBalance);
+    const { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount } = calculateWinRateAndAvgWinLoss(activities as any[]);
     const sharpeRatio = calculateSharpeRatio(portfolioHistory);
 
     return (
@@ -56,7 +52,7 @@ export default async function DashboardPage() {
             value={totalReturn.percentage}
             format="percent"
             icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-            description={`${totalReturn.value >= 0 ? '+' : ''}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalReturn.value)} all time`}
+            description={`${totalReturn.value >= 0 ? '+' : ''}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalReturn.value)} all time (vs $100k)`}
           />
           <KpiCard
             title="Win Rate"
@@ -84,7 +80,7 @@ export default async function DashboardPage() {
             </CardContent>
           </Card>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <KpiCard
               title="Average Win"
               value={avgWin}
@@ -99,12 +95,19 @@ export default async function DashboardPage() {
               icon={<TrendingDown className="h-4 w-4 text-red-500" />}
               description="Avg P/L of losing trades (Simulated)"
           />
+           <KpiCard
+              title="Winning Trades"
+              value={winningTradesCount}
+              format="integer"
+              icon={<PlusCircle className="h-4 w-4 text-green-500" />}
+              description="Total winning trades"
+          />
           <KpiCard
-              title="Max Drawdown"
-              value={maxDrawdown.value}
-              format="currency"
-              icon={<TrendingDown className="h-4 w-4 text-red-500" />}
-              description={`${maxDrawdown.percentage.toFixed(2)}% of peak equity`}
+              title="Losing Trades"
+              value={losingTradesCount}
+              format="integer"
+              icon={<MinusCircle className="h-4 w-4 text-red-500" />}
+              description="Total losing trades"
           />
         </div>
 
