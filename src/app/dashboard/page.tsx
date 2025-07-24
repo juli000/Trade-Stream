@@ -8,8 +8,7 @@ import {
 import KpiCard from "@/components/dashboard/kpi-card";
 import EquityChart from "@/components/dashboard/equity-chart";
 import RecentTradesTable from "@/components/dashboard/recent-trades-table";
-import PositionsPieChart from "@/components/dashboard/positions-pie-chart";
-import { mockAccount, mockActivities, mockPortfolioHistory, mockPositions } from "@/lib/mock-data";
+import { mockAccount, mockActivities, mockPortfolioHistory } from "@/lib/mock-data";
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
@@ -23,7 +22,6 @@ export default async function DashboardPage() {
   const account = mockAccount;
   const portfolioHistory = mockPortfolioHistory;
   const activities = mockActivities;
-  const positions = mockPositions;
 
   const totalReturn = calculateTotalReturn(portfolioHistory);
   const { winRate, avgWin, avgLoss, profitFactor } = calculateWinRateAndAvgWinLoss(activities);
@@ -68,8 +66,7 @@ export default async function DashboardPage() {
         />
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-7">
-        <Card className="lg:col-span-5">
+      <Card>
           <CardHeader>
             <CardTitle>Equity Curve</CardTitle>
             <CardDescription>Your portfolio value over the last 30 days.</CardDescription>
@@ -78,16 +75,6 @@ export default async function DashboardPage() {
             <EquityChart data={portfolioHistory} />
           </CardContent>
         </Card>
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Position Allocation</CardTitle>
-            <CardDescription>Your current portfolio breakdown by market value.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <PositionsPieChart data={positions} />
-          </CardContent>
-        </Card>
-      </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <KpiCard
