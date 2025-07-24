@@ -127,7 +127,7 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Recent Trades</CardTitle>
+            <CardTitle>All Actions</CardTitle>
             <CardDescription>A list of your most recent trade activities.</CardDescription>
           </CardHeader>
           <CardContent>
