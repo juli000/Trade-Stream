@@ -25,7 +25,7 @@ export default function EquityChart({ data }: EquityChartProps) {
 
     const chartData = [
         {
-            date: new Date('2024-07-23T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            date: 'Jul 23',
             equity: 100000,
         },
         ...filteredData.map(item => ({
