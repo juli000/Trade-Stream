@@ -135,14 +135,14 @@ export default async function DashboardPage() {
               value={avgWin}
               format="currency"
               icon={<TrendingUp className="h-4 w-4 text-green-500" />}
-              description="Avg P/L of winning trades (Simulated)"
+              description="Avg of winning trades :)"
           />
           <KpiCard
               title="Average Loss"
               value={avgLoss}
               format="currency"
               icon={<TrendingDown className="h-4 w-4 text-red-500" />}
-              description="Avg P/L of losing trades (Simulated)"
+              description="Avg of losing trades :("
           />
            <KpiCard
               title="Winning Trades"
