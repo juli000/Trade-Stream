@@ -12,13 +12,28 @@ import { Badge } from "@/components/ui/badge";
 import type { Activity } from "@/lib/types";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 interface RecentTradesTableProps {
   data: Activity[];
 }
 
 export default function RecentTradesTable({ data }: RecentTradesTableProps) {
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const trades = data.filter(activity => activity.activity_type === 'FILL');
+
+  const formatDate = (dateString: string) => {
+    if (!isClient) {
+      return null; // Don't render date on server to avoid mismatch
+    }
+    return format(new Date(dateString), "PPp");
+  };
+
   return (
     <Table>
       <TableHeader>
@@ -37,11 +52,11 @@ export default function RecentTradesTable({ data }: RecentTradesTableProps) {
             <TableCell>
               <div className="font-medium">{trade.symbol}</div>
               <div className="text-xs text-muted-foreground sm:hidden">
-                {format(new Date(trade.transaction_time), "PPp")}
+                {formatDate(trade.transaction_time)}
               </div>
             </TableCell>
             <TableCell className="hidden sm:table-cell">
-              {format(new Date(trade.transaction_time), "PPp")}
+              {formatDate(trade.transaction_time)}
             </TableCell>
             <TableCell className="text-right">
               <Badge
