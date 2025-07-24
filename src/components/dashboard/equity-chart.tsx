@@ -21,7 +21,7 @@ interface EquityChartProps {
 export default function EquityChart({ data }: EquityChartProps) {
   const chartData = data.timestamp.map((ts, index) => ({
     date: format(new Date(ts * 1000), 'MMM d'),
-    equity: data.equity[index],
+    equity: 100000,
   }));
 
   const formatCurrency = (value: number) => {
