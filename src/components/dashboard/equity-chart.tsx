@@ -16,10 +16,23 @@ const chartConfig = {
 };
 
 export default function EquityChart({ data }: EquityChartProps) {
-  const chartData = data.timestamp.map((ts, index) => ({
-    date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    equity: data.equity[index],
-  }));
+    const startDate = new Date('2024-07-23T00:00:00Z').getTime() / 1000;
+
+    const filteredData = data.timestamp.map((ts, index) => ({
+        timestamp: ts,
+        equity: data.equity[index],
+    })).filter(item => item.timestamp >= startDate);
+
+    const chartData = [
+        {
+            date: new Date('2024-07-23T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            equity: 100000,
+        },
+        ...filteredData.map(item => ({
+            date: new Date(item.timestamp * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            equity: item.equity,
+        })),
+    ];
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
