@@ -13,11 +13,14 @@ import {
   calculateWinRateAndAvgWinLoss, 
   calculateSharpeRatio 
 } from "@/lib/statistics";
-import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle, List, Percent } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle, List, Percent, Activity as ActivityIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import OpenPositionsTable from "@/components/dashboard/open-positions-table";
 import BiggestMoversTable from "@/components/dashboard/biggest-movers-table";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 
 export default async function DashboardPage() {
@@ -32,7 +35,9 @@ export default async function DashboardPage() {
     const initialBalance = 100000;
     const { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount } = calculateWinRateAndAvgWinLoss(activities as any[]);
     const todaysPnl = parseFloat(account.equity) - parseFloat(account.last_equity);
+    const todaysPnlPct = (todaysPnl / parseFloat(account.last_equity)) * 100;
     const totalTrades = activities.filter(a => a.activity_type === 'FILL').length;
+    const {value: totalReturn, percentage: totalReturnPct} = calculateTotalReturn(parseFloat(account.equity), initialBalance);
 
 
     return (
@@ -47,29 +52,40 @@ export default async function DashboardPage() {
             title="Portfolio Value"
             value={parseFloat(account.equity)}
             format="currency"
-            icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
-            description={`Buying Power: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(parseFloat(account.buying_power))}`}
+            icon={<DollarSign className="h-4 w-4 text-blue-500" />}
+            description={
+              <span className={cn(totalReturn >= 0 ? "text-green-500" : "text-red-500", "flex items-center gap-1")}>
+                  <TrendingUp className="h-4 w-4"/>
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', signDisplay: 'always' }).format(totalReturn)}
+                  ({totalReturnPct.toFixed(2)}%)
+              </span>
+            }
           />
           <KpiCard
             title="Today's P/L"
             value={todaysPnl}
             format="currency"
-            icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-            description={`vs. last equity of ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(parseFloat(account.last_equity))}`}
+            icon={<TrendingUp className={cn("h-4 w-4", todaysPnl >= 0 ? "text-green-500" : "text-red-500")} />}
+            valueClassName={cn(todaysPnl >= 0 ? "text-green-500" : "text-red-500")}
+            description={
+                 <Badge variant="outline" className={cn(todaysPnl >= 0 ? "text-green-500 border-green-500" : "text-red-500 border-red-500")}>
+                    {todaysPnlPct.toFixed(2)}%
+                </Badge>
+            }
           />
           <KpiCard
             title="Total Trades"
             value={totalTrades}
             format="integer"
-            icon={<List className="h-4 w-4 text-muted-foreground" />}
+            icon={<ActivityIcon className="h-4 w-4 text-cyan-500" />}
             description="Total number of trade executions"
           />
            <KpiCard
             title="Win Rate"
             value={winRate}
             format="percent"
-            icon={<Percent className="h-4 w-4 text-muted-foreground" />}
-            description={`Profit Factor: ${profitFactor.toFixed(2)} (Simulated)`}
+            icon={<TrendingUp className="h-4 w-4 text-green-500" />}
+            description={<Progress value={winRate} className="h-2" indicatorClassName="bg-green-500" />}
           />
         </div>
         

@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { ReactNode } from "react";
 
 interface KpiCardProps {
   title: string;
   value: number;
-  description?: string;
+  description?: string | ReactNode;
   icon: ReactNode;
   format?: 'currency' | 'percent' | 'number' | 'integer';
+  valueClassName?: string;
 }
 
 const formatValue = (value: number, format: KpiCardProps['format']) => {
@@ -18,13 +20,13 @@ const formatValue = (value: number, format: KpiCardProps['format']) => {
         case 'number':
             return value.toFixed(2);
         case 'integer':
-            return value.toString();
+            return new Intl.NumberFormat('en-US').format(value);
         default:
             return value.toString();
     }
 }
 
-export default function KpiCard({ title, value, description, icon, format = 'number' }: KpiCardProps) {
+export default function KpiCard({ title, value, description, icon, format = 'number', valueClassName }: KpiCardProps) {
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -32,8 +34,8 @@ export default function KpiCard({ title, value, description, icon, format = 'num
         {icon}
       </CardHeader>
       <CardContent>
-        <div className="text-2xl font-bold">{formatValue(value, format)}</div>
-        {description && <p className="text-xs text-muted-foreground">{description}</p>}
+        <div className={cn("text-2xl font-bold", valueClassName)}>{formatValue(value, format)}</div>
+        {description && <div className="text-xs text-muted-foreground pt-1">{description}</div>}
       </CardContent>
     </Card>
   );
