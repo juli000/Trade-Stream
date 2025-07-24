@@ -22,7 +22,7 @@ export default function EquityChart({ data }: EquityChartProps) {
   }));
 
   return (
-    <ChartContainer config={chartConfig} className="min-h-[350px] w-full">
+    <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
       <AreaChart
         data={chartData}
         margin={{
@@ -53,6 +53,7 @@ export default function EquityChart({ data }: EquityChartProps) {
           tickLine={false}
           axisLine={false}
           tickFormatter={(value) => `$${(Number(value) / 1000).toFixed(0)}k`}
+          domain={['dataMin - 1000', 'dataMax + 1000']}
         />
         <Tooltip
           cursor={false}

@@ -72,7 +72,7 @@ export default async function DashboardPage() {
 
         <Card>
             <CardHeader>
-              <CardTitle>Equity Curve</CardTitle>
+              <CardTitle>Bankroll</CardTitle>
               <CardDescription>Your portfolio value over the last 30 days.</CardDescription>
             </CardHeader>
             <CardContent className="pl-2">
