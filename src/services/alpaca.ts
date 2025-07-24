@@ -44,49 +44,28 @@ export async function getPortfolioHistory() {
   }
 }
 
-async function getClosedPositions() {
-    try {
-        const positions = await alpaca.getClosedPositions();
-        return positions;
-    } catch (error: any) {
-        console.error('[Alpaca] Error fetching closed positions:', error?.message);
-        throw new Error('Failed to fetch closed positions from Alpaca.');
-    }
-}
-
-
 export async function getActivities() {
   try {
-    // We get fills and closed positions to calculate P/L
-    const [activities, closedPositions] = await Promise.all([
-        alpaca.getAccountActivities({
-            activityTypes: 'FILL',
-            pageSize: 100,
-            direction: 'desc',
-        }),
-        getClosedPositions()
-    ]);
+    const activities = await alpaca.getAccountActivities({
+        activityTypes: 'FILL',
+        pageSize: 100,
+        direction: 'desc',
+    });
     
-    // Create a map for quick lookup of closed position P/L
-    const plBySymbol = new Map();
-    for (const pos of closedPositions) {
-        if (!plBySymbol.has(pos.symbol)) {
-            plBySymbol.set(pos.symbol, []);
-        }
-        plBySymbol.get(pos.symbol).push(parseFloat(pos.unrealized_pl));
-    }
+    const activitiesWithPl = [...activities].reverse().map((activity, index, self) => {
+        if (activity.side === 'sell') {
+            // Find the corresponding buy order for the same symbol before this sell
+            const buyActivity = self.slice(0, index).reverse().find(
+                (a) => a.symbol === activity.symbol && a.side === 'buy'
+            );
 
-    // Attempt to assign P/L to sell activities. This is an approximation.
-    const activitiesWithPl = activities.map(activity => {
-        if (activity.side === 'sell' && plBySymbol.has(activity.symbol)) {
-            const pls = plBySymbol.get(activity.symbol);
-            if (pls.length > 0) {
-                 // Use the most recent P/L available for that symbol and remove it
-                return { ...activity, pl: pls.shift() };
+            if (buyActivity && buyActivity.price && activity.price) {
+                const pl = (parseFloat(activity.price) - parseFloat(buyActivity.price)) * parseFloat(activity.qty);
+                return { ...activity, pl };
             }
         }
         return activity;
-    });
+    }).reverse(); // reverse back to descending order
 
     return activitiesWithPl;
   } catch (error: any) {
