@@ -20,6 +20,8 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
         return <p className="text-sm text-muted-foreground">You have no open positions.</p>
     }
 
+  const sortedData = [...data].sort((a, b) => Number(b.unrealized_pl) - Number(a.unrealized_pl));
+
   return (
     <Table>
       <TableHeader>
@@ -31,7 +33,7 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {data.map((pos) => (
+        {sortedData.map((pos) => (
           <TableRow key={pos.asset_id}>
             <TableCell>
               <div className="font-medium">{pos.symbol}</div>
