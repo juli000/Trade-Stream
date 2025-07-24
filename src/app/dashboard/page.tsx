@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { format, isToday } from "date-fns";
 import EquityChart from "@/components/dashboard/equity-chart";
+import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
 
 
 export default async function DashboardPage() {
@@ -46,6 +47,7 @@ export default async function DashboardPage() {
 
     return (
       <div className="space-y-8">
+        <DashboardRefresher />
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Welcome to your Alpaca Portfolio Tracker.</p>
