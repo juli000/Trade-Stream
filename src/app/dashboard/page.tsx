@@ -11,9 +11,8 @@ import { getAccount, getActivities, getPortfolioHistory, getPositions } from "@/
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
-  calculateSharpeRatio 
 } from "@/lib/statistics";
-import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle, List, Percent, Activity as ActivityIcon } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, PlusCircle, MinusCircle, Activity as ActivityIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import OpenPositionsTable from "@/components/dashboard/open-positions-table";
@@ -21,6 +20,7 @@ import BiggestMoversTable from "@/components/dashboard/biggest-movers-table";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { format, isToday } from "date-fns";
 
 
 export default async function DashboardPage() {
@@ -36,7 +36,10 @@ export default async function DashboardPage() {
     const { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount } = calculateWinRateAndAvgWinLoss(activities as any[]);
     const todaysPnl = parseFloat(account.equity) - parseFloat(account.last_equity);
     const todaysPnlPct = (todaysPnl / parseFloat(account.last_equity)) * 100;
-    const totalTrades = activities.filter(a => a.activity_type === 'FILL').length;
+    const allTrades = activities.filter(a => a.activity_type === 'FILL');
+    const totalTrades = allTrades.length;
+    const tradesToday = allTrades.filter(a => isToday(new Date(a.transaction_time))).length;
+
     const {value: totalReturn, percentage: totalReturnPct} = calculateTotalReturn(parseFloat(account.equity), initialBalance);
 
 
@@ -78,7 +81,7 @@ export default async function DashboardPage() {
             value={totalTrades}
             format="integer"
             icon={<ActivityIcon className="h-4 w-4 text-cyan-500" />}
-            description="Total number of trade executions"
+            description={<span className="text-cyan-500">{tradesToday} today</span>}
           />
            <KpiCard
             title="Win Rate"
