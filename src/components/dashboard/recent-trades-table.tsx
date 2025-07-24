@@ -79,10 +79,12 @@ export default function RecentTradesTable({ data }: RecentTradesTableProps) {
             <TableCell
               className={cn(
                 "text-right font-medium",
-                trade.pl && trade.pl > 0 ? "text-green-600" : "text-red-600"
+                 trade.pl && trade.side === 'sell'
+                    ? trade.pl > 0 ? "text-green-600" : "text-red-600"
+                    : ""
               )}
             >
-              {trade.pl
+              {trade.side === 'sell' && trade.pl
                 ? new Intl.NumberFormat("en-US", {
                     style: "currency",
                     currency: "USD",

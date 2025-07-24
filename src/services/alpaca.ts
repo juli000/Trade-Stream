@@ -44,18 +44,51 @@ export async function getPortfolioHistory() {
   }
 }
 
+async function getClosedPositions() {
+    try {
+        const positions = await alpaca.getClosedPositions();
+        return positions;
+    } catch (error: any) {
+        console.error('[Alpaca] Error fetching closed positions:', error?.message);
+        throw new Error('Failed to fetch closed positions from Alpaca.');
+    }
+}
+
+
 export async function getActivities() {
   try {
-    const activities = await alpaca.getAccountActivities({
-      activityTypes: 'FILL',
-      pageSize: 100,
-      direction: 'desc',
-      after: undefined,
-      until: undefined,
-      date: undefined,
-      pageToken: undefined,
+    // We get fills and closed positions to calculate P/L
+    const [activities, closedPositions] = await Promise.all([
+        alpaca.getAccountActivities({
+            activityTypes: 'FILL',
+            pageSize: 100,
+            direction: 'desc',
+        }),
+        getClosedPositions()
+    ]);
+    
+    // Create a map for quick lookup of closed position P/L
+    const plBySymbol = new Map();
+    for (const pos of closedPositions) {
+        if (!plBySymbol.has(pos.symbol)) {
+            plBySymbol.set(pos.symbol, []);
+        }
+        plBySymbol.get(pos.symbol).push(parseFloat(pos.unrealized_pl));
+    }
+
+    // Attempt to assign P/L to sell activities. This is an approximation.
+    const activitiesWithPl = activities.map(activity => {
+        if (activity.side === 'sell' && plBySymbol.has(activity.symbol)) {
+            const pls = plBySymbol.get(activity.symbol);
+            if (pls.length > 0) {
+                 // Use the most recent P/L available for that symbol and remove it
+                return { ...activity, pl: pls.shift() };
+            }
+        }
+        return activity;
     });
-    return activities;
+
+    return activitiesWithPl;
   } catch (error: any) {
     console.error('[Alpaca] Error fetching activities:', error?.message);
     throw new Error('Failed to fetch trade activities from Alpaca.');
