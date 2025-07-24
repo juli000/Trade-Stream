@@ -6,25 +6,27 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import KpiCard from "@/components/dashboard/kpi-card";
-import EquityChart from "@/components/dashboard/equity-chart";
 import RecentTradesTable from "@/components/dashboard/recent-trades-table";
-import { getAccount, getActivities, getPortfolioHistory } from "@/services/alpaca";
+import { getAccount, getActivities, getPortfolioHistory, getPositions } from "@/services/alpaca";
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
   calculateSharpeRatio 
 } from "@/lib/statistics";
-import { DollarSign, Percent, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
+import OpenPositionsTable from "@/components/dashboard/open-positions-table";
+import BiggestMoversTable from "@/components/dashboard/biggest-movers-table";
 
 
 export default async function DashboardPage() {
   try {
-    const [account, portfolioHistory, activities] = await Promise.all([
+    const [account, portfolioHistory, activities, positions] = await Promise.all([
       getAccount(),
       getPortfolioHistory(),
       getActivities(),
+      getPositions(),
     ]);
 
     const initialBalance = 100000;
@@ -69,16 +71,28 @@ export default async function DashboardPage() {
             description="Annualized (daily returns)"
           />
         </div>
+        
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Open Positions</CardTitle>
+                    <CardDescription>Your currently held assets.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <OpenPositionsTable data={positions} />
+                </CardContent>
+            </Card>
+            <Card>
+                 <CardHeader>
+                    <CardTitle>Biggest Movers</CardTitle>
+                    <CardDescription>Your top 3 winning and losing trades.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <BiggestMoversTable data={activities as any[]} />
+                </CardContent>
+            </Card>
+        </div>
 
-        <Card>
-            <CardHeader>
-              <CardTitle>Bankroll</CardTitle>
-              <CardDescription>Your portfolio value over the last 30 days.</CardDescription>
-            </CardHeader>
-            <CardContent className="pl-2">
-              <EquityChart data={portfolioHistory} currentEquity={parseFloat(account.equity)} />
-            </CardContent>
-          </Card>
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <KpiCard
