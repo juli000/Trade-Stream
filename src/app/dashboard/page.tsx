@@ -21,7 +21,6 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { format, isToday } from "date-fns";
-import EquityChart from "@/components/dashboard/equity-chart";
 import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
 
 
@@ -106,18 +105,6 @@ export default async function DashboardPage() {
           />
         </div>
 
-        <Card>
-          <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
-                Portfolio Performance
-              </CardTitle>
-          </CardHeader>
-          <CardContent>
-              <EquityChart data={portfolioHistory} />
-          </CardContent>
-        </Card>
-        
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <Card>
                 <CardHeader>
