@@ -1,6 +1,7 @@
 'use server';
 
 import Alpaca from '@alpacahq/alpaca-trade-api';
+import type { Activity } from '@/lib/types';
 
 const {
   ALPACA_API_KEY_ID,
@@ -44,7 +45,7 @@ export async function getPortfolioHistory() {
   }
 }
 
-export async function getActivities() {
+export async function getActivities(): Promise<Activity[]> {
   try {
     const activities = await alpaca.getAccountActivities({
         activityTypes: 'FILL',
@@ -52,22 +53,49 @@ export async function getActivities() {
         direction: 'desc',
     });
     
+    // Calculate P/L for sells based on previous buys
     const activitiesWithPl = [...activities].reverse().map((activity, index, self) => {
-        if (activity.side === 'sell') {
-            // Find the corresponding buy order for the same symbol before this sell
+        if (activity.side === 'sell' && activity.price) {
             const buyActivity = self.slice(0, index).reverse().find(
-                (a) => a.symbol === activity.symbol && a.side === 'buy'
+                (a) => a.symbol === activity.symbol && a.side === 'buy' && a.price
             );
 
-            if (buyActivity && buyActivity.price && activity.price) {
+            if (buyActivity && buyActivity.price) {
                 const pl = (parseFloat(activity.price) - parseFloat(buyActivity.price)) * parseFloat(activity.qty);
                 return { ...activity, pl };
             }
         }
         return activity;
-    }).reverse(); // reverse back to descending order
+    }).reverse();
 
-    return activitiesWithPl;
+
+    // Grouping logic
+    const groupedActivities: { [key: string]: Activity } = {};
+
+    for (const activity of activitiesWithPl) {
+        // Price can be null, handle it gracefully
+        if (activity.price === null || activity.price === undefined) continue;
+
+        const key = `${activity.symbol}|${activity.side}|${activity.price}`;
+        if (groupedActivities[key]) {
+            // Aggregate quantity
+            const currentQty = parseFloat(groupedActivities[key].qty);
+            const newQty = parseFloat(activity.qty);
+            groupedActivities[key].qty = (currentQty + newQty).toString();
+            
+            // Aggregate P/L for sells
+            if (groupedActivities[key].side === 'sell' && activity.pl) {
+               const currentPl = groupedActivities[key].pl || 0;
+               groupedActivities[key].pl = currentPl + activity.pl;
+            }
+        } else {
+            // New entry
+            groupedActivities[key] = { ...activity };
+        }
+    }
+
+    return Object.values(groupedActivities);
+
   } catch (error: any) {
     console.error('[Alpaca] Error fetching activities:', error?.message);
     throw new Error('Failed to fetch trade activities from Alpaca.');

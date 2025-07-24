@@ -90,7 +90,7 @@ export default function RecentTradesTable({ data }: RecentTradesTableProps) {
                     currency: "USD",
                     signDisplay: "auto"
                   }).format(trade.pl)
-                : "N/A"}
+                : null}
             </TableCell>
           </TableRow>
         ))}
