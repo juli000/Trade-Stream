@@ -13,7 +13,7 @@ import {
   calculateWinRateAndAvgWinLoss, 
   calculateSharpeRatio 
 } from "@/lib/statistics";
-import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, CheckCircle, Target, PlusCircle, MinusCircle, List, Percent } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import OpenPositionsTable from "@/components/dashboard/open-positions-table";
@@ -30,9 +30,10 @@ export default async function DashboardPage() {
     ]);
 
     const initialBalance = 100000;
-    const totalReturn = calculateTotalReturn(parseFloat(account.equity), initialBalance);
     const { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount } = calculateWinRateAndAvgWinLoss(activities as any[]);
-    const sharpeRatio = calculateSharpeRatio(portfolioHistory);
+    const todaysPnl = parseFloat(account.equity) - parseFloat(account.last_equity);
+    const totalTrades = activities.filter(a => a.activity_type === 'FILL').length;
+
 
     return (
       <div className="space-y-8">
@@ -43,32 +44,32 @@ export default async function DashboardPage() {
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <KpiCard
-            title="Current Equity"
+            title="Portfolio Value"
             value={parseFloat(account.equity)}
             format="currency"
             icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
             description={`Buying Power: ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(parseFloat(account.buying_power))}`}
           />
           <KpiCard
-            title="Total Return"
-            value={totalReturn.percentage}
-            format="percent"
+            title="Today's P/L"
+            value={todaysPnl}
+            format="currency"
             icon={<TrendingUp className="h-4 w-4 text-muted-foreground" />}
-            description={`${totalReturn.value >= 0 ? '+' : ''}${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(totalReturn.value)} all time (vs $100k)`}
+            description={`vs. last equity of ${new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(parseFloat(account.last_equity))}`}
           />
           <KpiCard
+            title="Total Trades"
+            value={totalTrades}
+            format="integer"
+            icon={<List className="h-4 w-4 text-muted-foreground" />}
+            description="Total number of trade executions"
+          />
+           <KpiCard
             title="Win Rate"
             value={winRate}
             format="percent"
-            icon={<CheckCircle className="h-4 w-4 text-muted-foreground" />}
+            icon={<Percent className="h-4 w-4 text-muted-foreground" />}
             description={`Profit Factor: ${profitFactor.toFixed(2)} (Simulated)`}
-          />
-          <KpiCard
-            title="Sharpe Ratio"
-            value={sharpeRatio}
-            format="number"
-            icon={<Target className="h-4 w-4 text-muted-foreground" />}
-            description="Annualized (daily returns)"
           />
         </div>
         
