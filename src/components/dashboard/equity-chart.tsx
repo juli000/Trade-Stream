@@ -18,26 +18,26 @@ const chartConfig = {
 export default function EquityChart({ data }: EquityChartProps) {
     const startDate = new Date('2024-07-23T00:00:00Z').getTime() / 1000;
 
-    const filteredData = data.timestamp.map((ts, index) => ({
-        timestamp: ts,
-        equity: data.equity[index],
-    })).filter(item => item.timestamp >= startDate);
-
+    const filteredTimestamps = data.timestamp.filter(ts => ts >= startDate);
+    const startIndex = data.timestamp.findIndex(ts => ts >= startDate);
+    
     const chartData = [
         {
             date: 'Jul 23',
             equity: 100000,
         },
-        ...filteredData.map(item => ({
-            date: new Date(item.timestamp * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            equity: item.equity,
+        ...filteredTimestamps.map((ts, index) => ({
+            date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            equity: data.equity[startIndex + index],
         })),
     ];
+    
+    const uniqueChartData = Array.from(new Map(chartData.map(item => [item.date, item])).values());
 
   return (
     <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
       <AreaChart
-        data={chartData}
+        data={uniqueChartData}
         margin={{
           top: 10,
           right: 30,
