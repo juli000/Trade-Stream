@@ -3,7 +3,7 @@ import type {
   Activity as AlpacaActivity,
   PortfolioHistory as AlpacaPortfolioHistory,
   Position as AlpacaPosition,
-} from '@alpacahq/alpaca-trade-api/dist/resources/account';
+} from '@alpacahq/alpaca-trade-api/dist/resources/account.js';
 
 export type {
   AlpacaAccount,
