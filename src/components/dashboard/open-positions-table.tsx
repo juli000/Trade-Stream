@@ -22,7 +22,7 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
     }
 
   const sortedData = [...data].sort((a, b) => Number(b.unrealized_pl) - Number(a.unrealized_pl));
-  const displayedData = sortedData.slice(0, 10);
+  const displayedData = sortedData;
 
   const tableContent = (
     <Table>
@@ -65,7 +65,7 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
 
   if (sortedData.length > 10) {
     return (
-      <ScrollArea className="h-[400px]">
+      <ScrollArea className="h-full">
         {tableContent}
       </ScrollArea>
     );
