@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Position } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -21,8 +22,9 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
     }
 
   const sortedData = [...data].sort((a, b) => Number(b.unrealized_pl) - Number(a.unrealized_pl));
+  const displayedData = sortedData.slice(0, 10);
 
-  return (
+  const tableContent = (
     <Table>
       <TableHeader>
         <TableRow>
@@ -33,7 +35,7 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {sortedData.map((pos) => (
+        {displayedData.map((pos) => (
           <TableRow key={pos.asset_id}>
             <TableCell>
               <div className="font-medium">{pos.symbol}</div>
@@ -60,4 +62,14 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
       </TableBody>
     </Table>
   );
+
+  if (sortedData.length > 10) {
+    return (
+      <ScrollArea className="h-[400px]">
+        {tableContent}
+      </ScrollArea>
+    );
+  }
+
+  return tableContent;
 }
