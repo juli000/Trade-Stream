@@ -6,8 +6,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import KpiCard from "@/components/dashboard/kpi-card";
-import RecentTradesTable from "@/components/dashboard/recent-trades-table";
-import { getAccount, getActivities, getPositions } from "@/services/alpaca";
+import RecentOrdersTable from "@/components/dashboard/recent-orders-table";
+import { getAccount, getActivities, getPositions, getOrders } from "@/services/alpaca";
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
@@ -23,15 +23,17 @@ import { Badge } from "@/components/ui/badge";
 import { isToday } from "date-fns";
 import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
 import type { Position } from "@/lib/types";
+import type { Order } from "@alpacahq/alpaca-trade-api/dist/resources/order";
 
 export const revalidate = 0;
 
 export default async function DashboardPage() {
   try {
-    const [account, activities, positions] = await Promise.all([
+    const [account, activities, positions, orders] = await Promise.all([
       getAccount(),
       getActivities(),
       getPositions(),
+      getOrders(),
     ]);
 
     const validActivities = Array.isArray(activities) ? activities : [];
@@ -163,11 +165,11 @@ export default async function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>All Actions</CardTitle>
-            <CardDescription>A list of your most recent trade activities.</CardDescription>
+            <CardTitle>Recent Orders</CardTitle>
+            <CardDescription>A list of your most recent orders.</CardDescription>
           </CardHeader>
           <CardContent>
-            <RecentTradesTable data={validActivities} />
+            <RecentOrdersTable data={orders as Order[]} />
           </CardContent>
         </Card>
 
