@@ -50,29 +50,71 @@ export async function getPortfolioHistory() {
 export async function getActivities(): Promise<Activity[]> {
     if (useMockData) return mockActivities;
   try {
-    const activities: Activity[] = await alpaca!.getAccountActivities({
+    const activities: AlpacaActivity[] = await alpaca!.getAccountActivities({
         // activityTypes: 'FILL', // Keep all activities for now
         pageSize: 100,
         direction: 'desc',
     });
     
-    // Calculate P/L for sells based on previous buys. This is a simplified calculation.
-    const activitiesWithPl = [...activities].reverse().map((activity, index, self) => {
-        if (activity.activity_type === 'FILL' && activity.side === 'sell' && activity.price) {
-            const buyActivity = self.slice(0, index).reverse().find(
-                (a) => a.activity_type === 'FILL' && a.symbol === activity.symbol && a.side === 'buy' && a.price
-            );
+    // Calculate P/L for sells using FIFO logic.
+    const activitiesWithPl: Activity[] = [];
+    const buyFills: { [symbol: string]: { qty: number; price: number; id: string }[] } = {};
 
-            if (buyActivity && buyActivity.price) {
-                const pl = (parseFloat(activity.price) - parseFloat(buyActivity.price)) * parseFloat(activity.qty);
-                return { ...activity, pl };
-            }
+    // Process activities from oldest to newest
+    for (const activity of [...(activities as any[])].reverse()) {
+        if (activity.activity_type !== 'FILL' || !activity.price) {
+            activitiesWithPl.push(activity);
+            continue;
         }
-        return activity;
-    }).reverse();
+
+        const symbol = activity.symbol;
+        const qty = parseFloat(activity.qty);
+        const price = parseFloat(activity.price);
+
+        if (activity.side === 'buy') {
+            if (!buyFills[symbol]) {
+                buyFills[symbol] = [];
+            }
+            buyFills[symbol].push({ qty, price, id: activity.id });
+            activitiesWithPl.push(activity);
+        } else if (activity.side === 'sell') {
+            let totalCost = 0;
+            let qtyToSell = qty;
+            let realizedPl = 0;
+            
+            if (!buyFills[symbol] || buyFills[symbol].length === 0) {
+                 activitiesWithPl.push(activity); // Sell without a corresponding buy
+                 continue;
+            }
+            
+            while (qtyToSell > 0 && buyFills[symbol].length > 0) {
+                const buy = buyFills[symbol][0];
+                
+                if (buy.qty <= qtyToSell) {
+                    // This buy is fully consumed by the sell
+                    totalCost += buy.qty * buy.price;
+                    qtyToSell -= buy.qty;
+                    buyFills[symbol].shift(); // Remove the consumed buy
+                } else {
+                    // This buy is partially consumed
+                    totalCost += qtyToSell * buy.price;
+                    buy.qty -= qtyToSell;
+                    qtyToSell = 0;
+                }
+            }
+
+            const proceeds = qty * price;
+            const costBasis = totalCost;
+            realizedPl = proceeds - costBasis;
+
+            activitiesWithPl.push({ ...activity, pl: realizedPl });
+        } else {
+             activitiesWithPl.push(activity);
+        }
+    }
 
 
-    return activitiesWithPl;
+    return activitiesWithPl.reverse();
 
   } catch (error: any) {
     console.error('[Alpaca] Error fetching activities:', error?.message);
