@@ -8,8 +8,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'Alpaca Portfolio Tracker',
-  description: 'Track your Alpaca trading portfolio performance.',
+  title: 'Trade Stream',
+  description: 'Track our AI trading portfolio performance.',
 };
 
 export default function RootLayout({

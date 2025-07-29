@@ -59,7 +59,7 @@ export default async function DashboardPage() {
         <DashboardRefresher />
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome to your Alpaca Portfolio Tracker.</p>
+          <p className="text-muted-foreground">Welcome to your Algorithmic Trading Dashboard.</p>
         </div>
         {!process.env.API_KEY && (
              <Alert variant="default" className="bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-950 dark:border-yellow-800 dark:text-yellow-200 [&>svg]:text-yellow-600">
