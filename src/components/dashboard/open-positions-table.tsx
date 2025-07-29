@@ -63,8 +63,10 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
                   <Badge 
                      variant="secondary"
                      className={cn(
-                        "mt-1 bg-transparent hover:bg-transparent text-xs", 
-                        Number(pos.unrealized_plpc) >= 0 ? "text-green-500" : "text-red-500"
+                        "mt-1 text-xs justify-center", 
+                        Number(pos.unrealized_plpc) >= 0 
+                            ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300" 
+                            : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
                      )}
                   >
                      {(Number(pos.unrealized_plpc) * 100).toFixed(2)}%
