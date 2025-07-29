@@ -9,6 +9,7 @@ interface KpiCardProps {
   icon: ReactNode;
   format?: 'currency' | 'percent' | 'number' | 'integer';
   valueClassName?: string;
+  cardClassName?: string;
 }
 
 const formatValue = (value: number, format: KpiCardProps['format']) => {
@@ -26,9 +27,9 @@ const formatValue = (value: number, format: KpiCardProps['format']) => {
     }
 }
 
-export default function KpiCard({ title, value, description, icon, format = 'number', valueClassName }: KpiCardProps) {
+export default function KpiCard({ title, value, description, icon, format = 'number', valueClassName, cardClassName }: KpiCardProps) {
   return (
-    <Card>
+    <Card className={cn(cardClassName)}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
         {icon}

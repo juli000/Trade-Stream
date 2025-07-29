@@ -12,7 +12,7 @@ import {
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
 } from "@/lib/statistics";
-import { DollarSign, TrendingUp, TrendingDown, PlusCircle, MinusCircle, Activity as ActivityIcon } from "lucide-react";
+import { DollarSign, TrendingUp, TrendingDown, PlusCircle, MinusCircle, Activity as ActivityIcon, Wallet, Landmark } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import OpenPositionsTable from "@/components/dashboard/open-positions-table";
@@ -23,7 +23,7 @@ import { isToday } from "date-fns";
 import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
 import type { Position } from "@/lib/types";
 import type { Order } from "@alpacahq/alpaca-trade-api/dist/resources/order";
-import PortfolioAllocationChart from "@/components/dashboard/portfolio-allocation-chart";
+import AllocationBar from "@/components/dashboard/allocation-bar";
 
 export const revalidate = 0;
 
@@ -47,6 +47,12 @@ export default async function DashboardPage() {
     const tradesToday = allTrades.filter(a => a.transaction_time && isToday(new Date(a.transaction_time))).length;
 
     const {value: totalReturnValue, percentage: totalReturnPct} = calculateTotalReturn(parseFloat(account.equity), initialBalance);
+    
+    const cash = parseFloat(account.cash);
+    const invested = parseFloat(account.long_market_value);
+    const totalEquity = cash + invested;
+    const investedPct = totalEquity > 0 ? (invested / totalEquity) * 100 : 0;
+    const cashPct = totalEquity > 0 ? (cash / totalEquity) * 100 : 0;
 
 
     return (
@@ -125,11 +131,24 @@ export default async function DashboardPage() {
                     <CardTitle>Portfolio Allocation</CardTitle>
                     <CardDescription>Your portfolio's asset vs. cash distribution.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <PortfolioAllocationChart 
-                      cash={parseFloat(account.cash)}
-                      invested={parseFloat(account.long_market_value)}
-                    />
+                <CardContent className="space-y-6 pt-6">
+                    <AllocationBar invested={invested} cash={cash} />
+                    <div className="grid grid-cols-2 gap-4">
+                        <KpiCard 
+                            title="Total Invested"
+                            value={invested}
+                            format="currency"
+                            icon={<Wallet className="h-4 w-4 text-primary" />}
+                            description={`${investedPct.toFixed(1)}% of portfolio`}
+                        />
+                         <KpiCard 
+                            title="Available Cash"
+                            value={cash}
+                            format="currency"
+                            icon={<Landmark className="h-4 w-4 text-accent" />}
+                            description={`${cashPct.toFixed(1)}% of portfolio`}
+                        />
+                    </div>
                 </CardContent>
             </Card>
         </div>
