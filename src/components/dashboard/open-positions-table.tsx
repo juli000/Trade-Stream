@@ -11,6 +11,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { Position } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 interface OpenPositionsTableProps {
   data: Position[];
@@ -51,11 +52,21 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
                 Number(pos.unrealized_pl) >= 0 ? "text-green-600" : "text-red-600"
               )}
             >
-              {new Intl.NumberFormat("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                  signDisplay: "auto"
-              }).format(Number(pos.unrealized_pl))}
+              <div className="flex flex-col items-end">
+                  <span>
+                    {new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                        signDisplay: "auto"
+                    }).format(Number(pos.unrealized_pl))}
+                  </span>
+                  <Badge 
+                     variant="outline"
+                     className={cn("mt-1", Number(pos.unrealized_plpc) >= 0 ? "text-green-500 border-green-500" : "text-red-500 border-red-500")}
+                  >
+                     {(Number(pos.unrealized_plpc) * 100).toFixed(2)}%
+                  </Badge>
+              </div>
             </TableCell>
           </TableRow>
         ))}
