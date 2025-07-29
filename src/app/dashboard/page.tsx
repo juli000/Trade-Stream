@@ -43,7 +43,6 @@ export default async function DashboardPage() {
     const todaysPnl = parseFloat(account.equity) - parseFloat(account.last_equity);
     const todaysPnlPct = (todaysPnl / parseFloat(account.last_equity)) * 100;
     const allTrades = validActivities.filter(a => a.activity_type === 'FILL');
-    const totalTrades = allTrades.length;
     const tradesToday = allTrades.filter(a => a.transaction_time && isToday(new Date(a.transaction_time))).length;
 
     const {value: totalReturnValue, percentage: totalReturnPct} = calculateTotalReturn(parseFloat(account.equity), initialBalance);
@@ -101,11 +100,11 @@ export default async function DashboardPage() {
             }
           />
           <KpiCard
-            title="Total Trades"
-            value={totalTrades}
+            title="Trades Today"
+            value={tradesToday}
             format="integer"
             icon={<ActivityIcon className="h-4 w-4 text-cyan-500" />}
-            description={<span className="text-cyan-500">{tradesToday} today</span>}
+            description="Total trades executed today"
           />
            <KpiCard
             title="Win Rate"
