@@ -1,7 +1,8 @@
+
 'use client';
 
 import * as React from 'react';
-import { Pie, PieChart, Sector } from 'recharts';
+import { Pie, PieChart, Sector, TooltipPayload } from 'recharts';
 import {
   ChartContainer,
   ChartTooltip,
@@ -20,11 +21,11 @@ interface PortfolioAllocationChartProps {
 const chartConfig = {
   invested: {
     label: 'Invested',
-    color: 'hsl(var(--chart-1))',
+    color: 'hsl(var(--primary))',
   },
   cash: {
     label: 'Cash',
-    color: 'hsl(var(--chart-2))',
+    color: 'hsl(var(--accent))',
   },
 };
 
@@ -35,6 +36,28 @@ export default function PortfolioAllocationChart({ cash, invested }: PortfolioAl
   ];
   const total = cash + invested;
 
+  const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: TooltipPayload[] }) => {
+    if (active && payload && payload.length) {
+      const data = payload[0].payload;
+      const value = payload[0].value as number;
+      return (
+        <div className="rounded-lg border bg-background p-2 shadow-sm">
+          <div className="grid grid-cols-2 gap-2">
+            <div className="flex flex-col">
+              <span className="text-[0.70rem] uppercase text-muted-foreground">
+                {data.label}
+              </span>
+              <span className="font-bold text-foreground">
+                 {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)}
+              </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <ChartContainer
       config={chartConfig}
@@ -43,7 +66,7 @@ export default function PortfolioAllocationChart({ cash, invested }: PortfolioAl
       <PieChart>
         <ChartTooltip
           cursor={false}
-          content={<ChartTooltipContent hideLabel />}
+          content={<CustomTooltip />}
         />
         <Pie
           data={chartData}
@@ -51,17 +74,19 @@ export default function PortfolioAllocationChart({ cash, invested }: PortfolioAl
           nameKey="type"
           innerRadius={60}
           strokeWidth={5}
-          activeIndex={0}
-          activeShape={({ outerRadius = 0, ...props }) => (
-             <g>
-                <Sector {...props} outerRadius={outerRadius} />
-                <Sector
-                    {...props}
-                    outerRadius={outerRadius + 10}
-                    innerRadius={outerRadius + 4}
-                />
-            </g>
-          )}
+           labelLine={false}
+           label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+              const RADIAN = Math.PI / 180;
+              const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+              const x = cx + radius * Math.cos(-midAngle * RADIAN);
+              const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+              return (
+                <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="text-xs font-bold">
+                  {`${(percent * 100).toFixed(0)}%`}
+                </text>
+              );
+            }}
         >
         </Pie>
          <ChartLegend
