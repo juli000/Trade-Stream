@@ -61,8 +61,11 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
                     }).format(Number(pos.unrealized_pl))}
                   </span>
                   <Badge 
-                     variant="outline"
-                     className={cn("mt-1", Number(pos.unrealized_plpc) >= 0 ? "text-green-500 border-green-500" : "text-red-500 border-red-500")}
+                     variant="secondary"
+                     className={cn(
+                        "mt-1 bg-transparent hover:bg-transparent text-xs", 
+                        Number(pos.unrealized_plpc) >= 0 ? "text-green-500" : "text-red-500"
+                     )}
                   >
                      {(Number(pos.unrealized_plpc) * 100).toFixed(2)}%
                   </Badge>
@@ -73,14 +76,6 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
       </TableBody>
     </Table>
   );
-
-  if (sortedData.length > 10) {
-    return (
-      <ScrollArea className="h-full">
-        {tableContent}
-      </ScrollArea>
-    );
-  }
 
   return tableContent;
 }
