@@ -80,7 +80,6 @@ export async function getActivities(): Promise<Activity[]> {
         } else if (activity.side === 'sell') {
             let totalCost = 0;
             let qtyToSell = qty;
-            let realizedPl = 0;
             
             if (!buyFills[symbol] || buyFills[symbol].length === 0) {
                  activitiesWithPl.push(activity); // Sell without a corresponding buy
@@ -89,23 +88,19 @@ export async function getActivities(): Promise<Activity[]> {
             
             while (qtyToSell > 0 && buyFills[symbol].length > 0) {
                 const buy = buyFills[symbol][0];
+                const sellableQty = Math.min(qtyToSell, buy.qty);
+
+                totalCost += sellableQty * buy.price;
+                buy.qty -= sellableQty;
+                qtyToSell -= sellableQty;
                 
-                if (buy.qty <= qtyToSell) {
-                    // This buy is fully consumed by the sell
-                    totalCost += buy.qty * buy.price;
-                    qtyToSell -= buy.qty;
-                    buyFills[symbol].shift(); // Remove the consumed buy
-                } else {
-                    // This buy is partially consumed
-                    totalCost += qtyToSell * buy.price;
-                    buy.qty -= qtyToSell;
-                    qtyToSell = 0;
+                if (buy.qty === 0) {
+                    buyFills[symbol].shift(); // Remove the fully consumed buy
                 }
             }
 
             const proceeds = qty * price;
-            const costBasis = totalCost;
-            realizedPl = proceeds - costBasis;
+            const realizedPl = proceeds - totalCost;
 
             activitiesWithPl.push({ ...activity, pl: realizedPl });
         } else {
