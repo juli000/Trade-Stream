@@ -16,7 +16,6 @@ import { DollarSign, TrendingUp, TrendingDown, PlusCircle, MinusCircle, Activity
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Terminal } from "lucide-react";
 import OpenPositionsTable from "@/components/dashboard/open-positions-table";
-import BiggestMoversTable from "@/components/dashboard/biggest-movers-table";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +23,7 @@ import { isToday } from "date-fns";
 import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
 import type { Position } from "@/lib/types";
 import type { Order } from "@alpacahq/alpaca-trade-api/dist/resources/order";
+import PortfolioAllocationChart from "@/components/dashboard/portfolio-allocation-chart";
 
 export const revalidate = 0;
 
@@ -122,11 +122,14 @@ export default async function DashboardPage() {
             </Card>
             <Card>
                  <CardHeader>
-                    <CardTitle>Biggest Movers</CardTitle>
-                    <CardDescription>Your top 3 winning and losing trades.</CardDescription>
+                    <CardTitle>Portfolio Allocation</CardTitle>
+                    <CardDescription>Your portfolio's asset vs. cash distribution.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <BiggestMoversTable data={validActivities} />
+                    <PortfolioAllocationChart 
+                      cash={parseFloat(account.cash)}
+                      invested={parseFloat(account.long_market_value)}
+                    />
                 </CardContent>
             </Card>
         </div>
