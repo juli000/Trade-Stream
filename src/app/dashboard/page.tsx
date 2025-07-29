@@ -125,12 +125,12 @@ export default async function DashboardPage() {
                     <OpenPositionsTable data={positions as Position[]} />
                 </CardContent>
             </Card>
-            <Card>
+            <Card className="flex flex-col">
                  <CardHeader>
                     <CardTitle>Portfolio Allocation</CardTitle>
                     <CardDescription>Your portfolio's asset vs. cash distribution.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 pt-6">
+                <CardContent className="flex flex-col flex-grow justify-center space-y-6 pt-6">
                     <AllocationBar invested={invested} cash={cash} />
                     <div className="grid grid-cols-2 gap-4">
                         <KpiCard 
