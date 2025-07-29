@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import KpiCard from "@/components/dashboard/kpi-card";
 import RecentTradesTable from "@/components/dashboard/recent-trades-table";
-import { getAccount, getActivities, getPortfolioHistory, getPositions } from "@/services/alpaca";
+import { getAccount, getActivities, getPositions } from "@/services/alpaca";
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
@@ -20,28 +20,31 @@ import BiggestMoversTable from "@/components/dashboard/biggest-movers-table";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { format, isToday } from "date-fns";
+import { isToday } from "date-fns";
 import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
+import type { Position } from "@/lib/types";
 
+export const revalidate = 0;
 
 export default async function DashboardPage() {
   try {
-    const [account, portfolioHistory, activities, positions] = await Promise.all([
+    const [account, activities, positions] = await Promise.all([
       getAccount(),
-      getPortfolioHistory(),
       getActivities(),
       getPositions(),
     ]);
 
+    const validActivities = Array.isArray(activities) ? activities : [];
+
     const initialBalance = 100000;
-    const { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount } = calculateWinRateAndAvgWinLoss(activities as any[]);
+    const { winRate, avgWin, avgLoss, profitFactor, winningTradesCount, losingTradesCount } = calculateWinRateAndAvgWinLoss(validActivities);
     const todaysPnl = parseFloat(account.equity) - parseFloat(account.last_equity);
     const todaysPnlPct = (todaysPnl / parseFloat(account.last_equity)) * 100;
-    const allTrades = activities.filter(a => a.activity_type === 'FILL');
+    const allTrades = validActivities.filter(a => a.activity_type === 'FILL');
     const totalTrades = allTrades.length;
-    const tradesToday = allTrades.filter(a => isToday(new Date(a.transaction_time))).length;
+    const tradesToday = allTrades.filter(a => a.transaction_time && isToday(new Date(a.transaction_time))).length;
 
-    const {value: totalReturn, percentage: totalReturnPct} = calculateTotalReturn(parseFloat(account.equity), initialBalance);
+    const {value: totalReturnValue, percentage: totalReturnPct} = calculateTotalReturn(parseFloat(account.equity), initialBalance);
 
 
     return (
@@ -70,9 +73,9 @@ export default async function DashboardPage() {
             format="currency"
             icon={<DollarSign className="h-4 w-4 text-blue-500" />}
             description={
-              <span className={cn(totalReturn >= 0 ? "text-green-500" : "text-red-500", "flex items-center gap-1")}>
+              <span className={cn(totalReturnValue >= 0 ? "text-green-500" : "text-red-500", "flex items-center gap-1")}>
                   <TrendingUp className="h-4 w-4"/>
-                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', signDisplay: 'always' }).format(totalReturn)}
+                  {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', signDisplay: 'always' }).format(totalReturnValue)}
                   ({totalReturnPct.toFixed(2)}%)
               </span>
             }
@@ -85,7 +88,7 @@ export default async function DashboardPage() {
             valueClassName={cn(todaysPnl >= 0 ? "text-green-500" : "text-red-500")}
             description={
                  <Badge variant="outline" className={cn(todaysPnl >= 0 ? "text-green-500 border-green-500" : "text-red-500 border-red-500")}>
-                    {todaysPnlPct.toFixed(2)}%
+                    {todaysPnlPct ? todaysPnlPct.toFixed(2) : '0.00'}%
                 </Badge>
             }
           />
@@ -112,7 +115,7 @@ export default async function DashboardPage() {
                     <CardDescription>Your currently held assets.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <OpenPositionsTable data={positions} />
+                    <OpenPositionsTable data={positions as Position[]} />
                 </CardContent>
             </Card>
             <Card>
@@ -121,7 +124,7 @@ export default async function DashboardPage() {
                     <CardDescription>Your top 3 winning and losing trades.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <BiggestMoversTable data={activities as any[]} />
+                    <BiggestMoversTable data={validActivities} />
                 </CardContent>
             </Card>
         </div>
@@ -164,7 +167,7 @@ export default async function DashboardPage() {
             <CardDescription>A list of your most recent trade activities.</CardDescription>
           </CardHeader>
           <CardContent>
-            <RecentTradesTable data={activities as any[]} />
+            <RecentTradesTable data={validActivities} />
           </CardContent>
         </Card>
 
