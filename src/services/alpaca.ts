@@ -71,32 +71,7 @@ export async function getActivities(): Promise<Activity[]> {
     }).reverse();
 
 
-    // Grouping logic
-    const groupedActivities: { [key: string]: Activity } = {};
-
-    for (const activity of activitiesWithPl) {
-        // Price can be null, handle it gracefully
-        if (activity.price === null || activity.price === undefined) continue;
-
-        const key = `${activity.symbol}|${activity.side}|${activity.price}`;
-        if (groupedActivities[key]) {
-            // Aggregate quantity
-            const currentQty = parseFloat(groupedActivities[key].qty);
-            const newQty = parseFloat(activity.qty);
-            groupedActivities[key].qty = (currentQty + newQty).toString();
-            
-            // Aggregate P/L for sells
-            if (groupedActivities[key].side === 'sell' && activity.pl) {
-               const currentPl = groupedActivities[key].pl || 0;
-               groupedActivities[key].pl = currentPl + activity.pl;
-            }
-        } else {
-            // New entry
-            groupedActivities[key] = { ...activity };
-        }
-    }
-
-    return Object.values(groupedActivities);
+    return activitiesWithPl;
 
   } catch (error: any) {
     console.error('[Alpaca] Error fetching activities:', error?.message);
