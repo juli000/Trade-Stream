@@ -22,9 +22,8 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
         return <p className="text-sm text-muted-foreground">You have no open positions.</p>
     }
 
-  const sortedData = [...data].sort((a, b) => Number(b.unrealized_pl) - Number(a.unrealized_pl));
-  const displayedData = sortedData;
-
+  const sortedData = [...data].sort((a, b) => Number(b.market_value) - Number(a.market_value));
+  
   const tableContent = (
     <Table>
       <TableHeader>
@@ -36,13 +35,13 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {displayedData.map((pos) => (
+        {sortedData.map((pos) => (
           <TableRow key={pos.asset_id}>
             <TableCell>
               <div className="font-medium">{pos.symbol}</div>
               <div className="text-xs text-muted-foreground">{pos.asset_class.replace('_', ' ').toLocaleUpperCase()}</div>
             </TableCell>
-            <TableCell className="text-right">{pos.qty}</TableCell>
+            <TableCell className="text-right">{parseFloat(pos.qty).toFixed(2)}</TableCell>
             <TableCell className="text-right">
                 {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(Number(pos.avg_entry_price))}
             </TableCell>
@@ -63,7 +62,7 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
                   <Badge 
                      variant="secondary"
                      className={cn(
-                        "mt-1 text-xs justify-center", 
+                        "mt-1 text-xs justify-center w-16", 
                         Number(pos.unrealized_plpc) >= 0 
                             ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300" 
                             : "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
@@ -79,5 +78,9 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
     </Table>
   );
 
-  return tableContent;
+  return (
+    <ScrollArea className="h-[365px]">
+        {tableContent}
+    </ScrollArea>
+  );
 }
