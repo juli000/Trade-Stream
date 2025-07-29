@@ -22,7 +22,7 @@ export default function OpenPositionsTable({ data }: OpenPositionsTableProps) {
         return <p className="text-sm text-muted-foreground">You have no open positions.</p>
     }
 
-  const sortedData = [...data].sort((a, b) => Number(b.market_value) - Number(a.market_value));
+  const sortedData = [...data].sort((a, b) => Number(b.unrealized_pl) - Number(a.unrealized_pl));
   
   const tableContent = (
     <Table>
