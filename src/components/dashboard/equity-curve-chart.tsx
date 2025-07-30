@@ -36,6 +36,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
     const sevenDaysAgoTimestamp = Math.floor(sevenDaysAgo.getTime() / 1000);
 
     const filteredData = useMemo(() => {
+        if (!history || !history.timestamp) return [];
         return history.timestamp.map((ts, index) => {
             return {
                 timestamp: ts,
@@ -47,10 +48,11 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
 
     const chartData = useMemo(() => {
         return filteredData.map((data) => {
+            const pointDate = new Date(data.timestamp * 1000);
             return {
-                date: new Date(data.timestamp * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-                time: new Date(data.timestamp * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }),
-                equity: data.equity === 0 ? 100000 : data.equity,
+                date: pointDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }),
+                fullDate: pointDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                equity: data.equity,
             }
         }).filter(d => d.equity !== null);
     }, [filteredData]);
@@ -107,13 +109,13 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                             </defs>
                             <CartesianGrid vertical={false} strokeDasharray="3 3" />
                             <XAxis
-                                dataKey="time"
+                                dataKey="date"
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
                                 tickFormatter={(value, index) => {
                                     if (chartData.length > 10 && index % Math.floor(chartData.length / 5) !== 0) return '';
-                                    return value.replace(/:\d\d\s/, ' '); // 4 AM
+                                    return value;
                                 }}
                             />
                             <YAxis
@@ -128,7 +130,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                 cursor={true}
                                 content={<ChartTooltipContent 
                                     labelFormatter={(label, payload) => {
-                                        return `${payload?.[0]?.payload?.date}, ${payload?.[0]?.payload?.time}` || label;
+                                        return payload?.[0]?.payload?.fullDate || label;
                                     }}
                                     formatter={(value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value as number)}
                                     indicator="dot"
