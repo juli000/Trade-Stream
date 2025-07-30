@@ -63,19 +63,6 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
         },
      };
 
-    const maxEquity = Math.max(...chartData.map(d => d.equity ?? 0));
-    const tickInterval = 5000;
-    const upperTick = Math.ceil((maxEquity + tickInterval) / tickInterval) * tickInterval;
-    const ticks: number[] = [];
-    for (let i = 95000; i <= upperTick; i += tickInterval) {
-        ticks.push(i);
-    }
-    
-    if (ticks.length === 0) ticks.push(95000);
-    if(maxEquity > upperTick) ticks.push(upperTick + tickInterval)
-    const domain = [95000, 'auto'];
-
-
     return (
         <Card>
             <CardHeader>
@@ -109,8 +96,6 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
-                                domain={domain}
-                                ticks={ticks}
                                 tickFormatter={(value) => `$${new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(value)}`}
                             />
                             <ChartTooltip
