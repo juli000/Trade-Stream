@@ -23,10 +23,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
     if (!history || !history.timestamp || history.timestamp.length === 0) {
         return (
              <Card>
-                <CardHeader>
-                    <CardTitle>Equity Curve</CardTitle>
-                    <CardDescription>Your portfolio value over the last month.</CardDescription>
-                </CardHeader>
+                <CardHeader />
                 <CardContent>
                     <p className="text-muted-foreground">No historical data available yet.</p>
                 </CardContent>
@@ -61,10 +58,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
      if (chartData.length === 0) {
         return (
              <Card>
-                <CardHeader>
-                    <CardTitle>Equity Curve</CardTitle>
-                    <CardDescription>No data for the last 7 days.</CardDescription>
-                </CardHeader>
+                <CardHeader />
                 <CardContent>
                     <p className="text-muted-foreground">There is no portfolio history for the selected time range.</p>
                 </CardContent>
@@ -123,7 +117,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                 }}
                             />
                             <YAxis
-                                domain={[90000, 'auto']}
+                                domain={[95000, 'auto']}
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
