@@ -64,6 +64,20 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
         }).filter(d => d.equity !== null);
     }, [filteredData]);
 
+     if (chartData.length === 0) {
+        return (
+             <Card>
+                <CardHeader>
+                    <CardTitle>Equity Curve</CardTitle>
+                    <CardDescription>No data for the last 7 days.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-muted-foreground">There is no portfolio history for the selected time range.</p>
+                </CardContent>
+            </Card>
+        )
+    }
+
      const latestDataPoint = chartData[chartData.length - 1];
      const firstDataPoint = chartData[0];
      const dailyChange = latestDataPoint.equity - (chartData[chartData.length - 2]?.equity || firstDataPoint.equity);
@@ -82,16 +96,10 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-0">
                 <div>
                     <div className="flex items-baseline gap-2 pt-2">
-                         <p className="text-3xl font-bold tracking-tight">
-                            {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(latestDataPoint.equity)}
-                        </p>
                         <span className={cn("font-semibold", dailyChange >= 0 ? 'text-green-500' : 'text-red-500')}>
                             {dailyChange >= 0 ? '+' : ''}{dailyChangePct.toFixed(2)}%
                         </span>
                     </div>
-                     <p className="text-sm text-muted-foreground pt-1">
-                        {latestDataPoint.date}, {latestDataPoint.time} EDT
-                    </p>
                 </div>
             </CardHeader>
             <CardContent>
@@ -128,7 +136,6 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                 axisLine={false}
                                 tickMargin={8}
                                 tickFormatter={(value, index) => {
-                                    // Show fewer ticks on the X-axis for clarity
                                     if (chartData.length > 10 && index % Math.floor(chartData.length / 5) !== 0) return '';
                                     return value.replace(/:\d\d\s/, ' '); // 4 AM
                                 }}
