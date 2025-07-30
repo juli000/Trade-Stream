@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import KpiCard from "@/components/dashboard/kpi-card";
 import RecentOrdersTable from "@/components/dashboard/recent-orders-table";
-import { getAccount, getActivities, getPositions, getOrders } from "@/services/alpaca";
+import { getAccount, getActivities, getPositions, getOrders, getPortfolioHistory } from "@/services/alpaca";
 import { 
   calculateTotalReturn, 
   calculateWinRateAndAvgWinLoss, 
@@ -24,16 +24,18 @@ import DashboardRefresher from "@/components/dashboard/dashboard-refresher";
 import type { Position } from "@/lib/types";
 import type { Order } from "@alpacahq/alpaca-trade-api/dist/resources/order";
 import AllocationBar from "@/components/dashboard/allocation-bar";
+import EquityCurveChart from "@/components/dashboard/equity-curve-chart";
 
-export const revalidate = 0;
+export const revalidate = 30000;
 
 export default async function DashboardPage() {
   try {
-    const [account, activities, positions, orders] = await Promise.all([
+    const [account, activities, positions, orders, history] = await Promise.all([
       getAccount(),
       getActivities(),
       getPositions(),
       getOrders(),
+      getPortfolioHistory(),
     ]);
 
     const validActivities = Array.isArray(activities) ? activities : [];
@@ -114,6 +116,9 @@ export default async function DashboardPage() {
             description={<Progress value={winRate} className="h-2" indicatorClassName="bg-green-500" />}
           />
         </div>
+        
+        <EquityCurveChart history={history} />
+
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             <Card>
