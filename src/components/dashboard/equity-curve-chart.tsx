@@ -87,7 +87,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
      const chartConfig = {
         equity: {
             label: "Equity",
-            color: "hsl(var(--chart-4))",
+            color: "hsl(var(--chart-6))",
         },
      };
 
@@ -95,11 +95,8 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
         <Card>
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-0">
                 <div>
-                    <div className="flex items-baseline gap-2 pt-2">
-                        <span className={cn("font-semibold", dailyChange >= 0 ? 'text-green-500' : 'text-red-500')}>
-                            {dailyChange >= 0 ? '+' : ''}{dailyChangePct.toFixed(2)}%
-                        </span>
-                    </div>
+                    <CardTitle>Equity Curve</CardTitle>
+                    <CardDescription>Your portfolio value over time.</CardDescription>
                 </div>
             </CardHeader>
             <CardContent>
