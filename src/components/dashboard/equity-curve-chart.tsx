@@ -62,7 +62,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
     
     if (ticks.length === 0) ticks.push(95000);
     if(maxEquity > upperTick) ticks.push(upperTick + tickInterval)
-    const domain = [95000, 'dataMax + 1000'];
+    const domain = [95000, 'auto'];
 
 
     return (
