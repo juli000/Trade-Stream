@@ -1,15 +1,10 @@
 
 'use client';
 
-import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   ChartContainer,
@@ -17,9 +12,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import type { PortfolioHistory } from "@/lib/types";
-import { Button } from "../ui/button";
 import { useMemo } from "react";
-import { cn } from "@/lib/utils";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 interface EquityCurveChartProps {
     history: PortfolioHistory;
@@ -78,12 +72,6 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
         )
     }
 
-     const latestDataPoint = chartData[chartData.length - 1];
-     const firstDataPoint = chartData[0];
-     const dailyChange = latestDataPoint.equity - (chartData[chartData.length - 2]?.equity || firstDataPoint.equity);
-     const dailyChangePct = ((latestDataPoint.equity / (chartData[chartData.length - 2]?.equity || firstDataPoint.equity)) - 1) * 100;
-
-
      const chartConfig = {
         equity: {
             label: "Equity",
@@ -94,10 +82,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
     return (
         <Card>
             <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-0">
-                <div>
-                    <CardTitle>Equity Curve</CardTitle>
-                    <CardDescription>Your portfolio value over time.</CardDescription>
-                </div>
+               <div />
             </CardHeader>
             <CardContent>
                 <div className="h-[250px] w-full">
@@ -138,6 +123,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                 }}
                             />
                             <YAxis
+                                domain={[90000, 'auto']}
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
