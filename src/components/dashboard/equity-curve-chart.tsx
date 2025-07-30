@@ -36,10 +36,13 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
         )
     }
 
-    const chartData = history.timestamp.map((ts, index) => ({
-        date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-        equity: history.equity[index],
-    })).filter(d => d.equity !== null);
+    const chartData = history.timestamp.map((ts, index) => {
+        const equity = history.equity[index];
+        return {
+            date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            equity: equity === 0 ? 100000 : equity,
+        }
+    }).filter(d => d.equity !== null);
 
      const chartConfig = {
         equity: {
@@ -82,6 +85,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                 tickLine={false}
                                 axisLine={false}
                                 tickMargin={8}
+                                domain={['dataMin - 100', 'dataMax + 100']}
                                 tickFormatter={(value) => `$${new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(value)}`}
                             />
                             <ChartTooltip
