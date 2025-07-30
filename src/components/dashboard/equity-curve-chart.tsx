@@ -2,7 +2,7 @@
 'use client';
 
 import { TrendingUp } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Line, LineChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   Card,
   CardContent,
@@ -74,7 +74,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
             <CardContent>
                 <div className="h-[250px] w-full">
                     <ChartContainer config={chartConfig}>
-                        <AreaChart
+                        <LineChart
                             accessibilityLayer
                             data={chartData}
                             margin={{
@@ -108,29 +108,14 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                                     indicator="dot"
                                 />}
                             />
-                            <defs>
-                                <linearGradient id="fillEquity" x1="0" y1="0" x2="0" y2="1">
-                                    <stop
-                                    offset="5%"
-                                    stopColor="var(--color-equity)"
-                                    stopOpacity={0.8}
-                                    />
-                                    <stop
-                                    offset="95%"
-                                    stopColor="var(--color-equity)"
-                                    stopOpacity={0.1}
-                                    />
-                                </linearGradient>
-                            </defs>
-                            <Area
+                            <Line
                                 dataKey="equity"
                                 type="linear"
-                                fill="url(#fillEquity)"
-                                fillOpacity={0.4}
                                 stroke="var(--color-equity)"
-                                stackId="a"
+                                strokeWidth={2}
+                                dot={false}
                             />
-                        </AreaChart>
+                        </LineChart>
                     </ChartContainer>
                 </div>
             </CardContent>
