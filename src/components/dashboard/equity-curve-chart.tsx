@@ -37,13 +37,24 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
         )
     }
 
-    const chartData = history.timestamp.map((ts, index) => {
-        const equity = history.equity[index];
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const sevenDaysAgoTimestamp = Math.floor(sevenDaysAgo.getTime() / 1000);
+
+    const filteredData = history.timestamp.map((ts, index) => {
         return {
-            date: new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-            equity: equity === 0 ? 100000 : equity,
+            timestamp: ts,
+            equity: history.equity[index]
+        }
+    }).filter(d => d.timestamp >= sevenDaysAgoTimestamp);
+
+    const chartData = filteredData.map((data) => {
+        return {
+            date: new Date(data.timestamp * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+            equity: data.equity === 0 ? 100000 : data.equity,
         }
     }).filter(d => d.equity !== null);
+
 
      const chartConfig = {
         equity: {
@@ -70,7 +81,7 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
             <CardHeader>
                 <CardTitle>Equity Curve</CardTitle>
                 <CardDescription>
-                    Your portfolio value over the last month.
+                    Your portfolio value over the last 7 days.
                 </CardDescription>
             </CardHeader>
             <CardContent>
