@@ -58,63 +58,67 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                <ChartContainer config={chartConfig}>
-                    <AreaChart
-                        accessibilityLayer
-                        data={chartData}
-                        margin={{
-                            left: 12,
-                            right: 12,
-                        }}
-                    >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={(value) => value}
-                        />
-                        <YAxis
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            tickFormatter={(value) => `$${new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(value)}`}
-                        />
-                        <ChartTooltip
-                            cursor={false}
-                            content={<ChartTooltipContent 
-                                 labelFormatter={(label, payload) => {
-                                    return payload?.[0]?.payload?.date || label;
-                                 }}
-                                 formatter={(value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value as number)}
-                                 indicator="dot"
-                            />}
-                        />
-                        <defs>
-                            <linearGradient id="fillEquity" x1="0" y1="0" x2="0" y2="1">
-                                <stop
-                                offset="5%"
-                                stopColor="var(--color-equity)"
-                                stopOpacity={0.8}
-                                />
-                                <stop
-                                offset="95%"
-                                stopColor="var(--color-equity)"
-                                stopOpacity={0.1}
-                                />
-                            </linearGradient>
-                        </defs>
-                        <Area
-                            dataKey="equity"
-                            type="natural"
-                            fill="url(#fillEquity)"
-                            fillOpacity={0.4}
-                            stroke="var(--color-equity)"
-                            stackId="a"
-                        />
-                    </AreaChart>
-                </ChartContainer>
+                <div className="h-[250px] w-full">
+                    <ChartContainer config={chartConfig}>
+                        <AreaChart
+                            accessibilityLayer
+                            data={chartData}
+                            margin={{
+                                left: 12,
+                                right: 12,
+                                top: 10,
+                                bottom: 10
+                            }}
+                        >
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                                dataKey="date"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                tickFormatter={(value) => value}
+                            />
+                            <YAxis
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                tickFormatter={(value) => `$${new Intl.NumberFormat('en-US', { notation: 'compact', compactDisplay: 'short' }).format(value)}`}
+                            />
+                            <ChartTooltip
+                                cursor={false}
+                                content={<ChartTooltipContent 
+                                    labelFormatter={(label, payload) => {
+                                        return payload?.[0]?.payload?.date || label;
+                                    }}
+                                    formatter={(value) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value as number)}
+                                    indicator="dot"
+                                />}
+                            />
+                            <defs>
+                                <linearGradient id="fillEquity" x1="0" y1="0" x2="0" y2="1">
+                                    <stop
+                                    offset="5%"
+                                    stopColor="var(--color-equity)"
+                                    stopOpacity={0.8}
+                                    />
+                                    <stop
+                                    offset="95%"
+                                    stopColor="var(--color-equity)"
+                                    stopOpacity={0.1}
+                                    />
+                                </linearGradient>
+                            </defs>
+                            <Area
+                                dataKey="equity"
+                                type="linear"
+                                fill="url(#fillEquity)"
+                                fillOpacity={0.4}
+                                stroke="var(--color-equity)"
+                                stackId="a"
+                            />
+                        </AreaChart>
+                    </ChartContainer>
+                </div>
             </CardContent>
         </Card>
     )
