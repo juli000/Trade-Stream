@@ -79,9 +79,8 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
 
     return (
         <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-0">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-0">
                 <div>
-                    <CardTitle>Your portfolio</CardTitle>
                     <div className="flex items-baseline gap-2 pt-2">
                          <p className="text-3xl font-bold tracking-tight">
                             {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(latestDataPoint.equity)}
@@ -93,12 +92,6 @@ export default function EquityCurveChart({ history }: EquityCurveChartProps) {
                      <p className="text-sm text-muted-foreground pt-1">
                         {latestDataPoint.date}, {latestDataPoint.time} EDT
                     </p>
-                </div>
-                <div className="flex items-center gap-1">
-                    <Button variant="outline" size="sm" className="bg-secondary">1D</Button>
-                    <Button variant="ghost" size="sm">1M</Button>
-                    <Button variant="ghost" size="sm">1Y</Button>
-                    <Button variant="ghost" size="sm">All</Button>
                 </div>
             </CardHeader>
             <CardContent>
